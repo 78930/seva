@@ -1,0 +1,8 @@
+# Vercel Deployment Files (auto-generated, ignore in git)
+node_modules/
+.next/
+build/
+dist/
+.env.local
+.env.*.local
+*.log

@@ -1,0 +1,29 @@
+{
+  "version": 2,
+  "projectId": "problem-reporting-app",
+  "framework": "express",
+  "buildCommand": "cd server && npm install",
+  "outputDirectory": "server/src",
+  "public": true,
+  "env": {
+    "MONGO_URI": {
+      "description": "MongoDB connection string (use MongoDB Atlas)"
+    },
+    "NODE_ENV": "production",
+    "PORT": "3000"
+  },
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "server/src/server.js"
+    },
+    {
+      "src": "/admin",
+      "dest": "server/src/server.js"
+    },
+    {
+      "src": "/uploads/(.*)",
+      "dest": "server/src/server.js"
+    }
+  ]
+}
