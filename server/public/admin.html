@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Problem Reports Admin Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 24px;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+      color: #667eea;
+    }
+
+    .header p {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .filters-panel {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 24px;
+    }
+
+    .filters-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #333;
+    }
+
+    .filters-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+
+    .filter-group {
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .filter-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .filter-group input,
+    .filter-group select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .filter-group input:focus,
+    .filter-group select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s;
+      border-radius: 6px;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5568d3;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-secondary {
+      background: #e9ecef;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #dee2e6;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 16px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #333;
+      word-break: break-word;
+    }
+
+    .card-meta {
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 12px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .status-submitted {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status-in_review {
+      background: #cfe2ff;
+      color: #084298;
+    }
+
+    .status-resolved {
+      background: #d1e7dd;
+      color: #0f5132;
+    }
+
+    .card-content {
+      margin: 12px 0;
+    }
+
+    .card-field {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .card-field-label {
+      font-weight: 600;
+      color: #666;
+      min-width: 80px;
+    }
+
+    .card-field-value {
+      color: #333;
+      flex: 1;
+      word-break: break-word;
+    }
+
+    .card-description {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.5;
+      margin: 12px 0;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      border-left: 3px solid #667eea;
+    }
+
+    .preview {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin: 12px 0;
+      cursor: pointer;
+    }
+
+    .audio {
+      width: 100%;
+      margin: 12px 0;
+      outline: none;
+    }
+
+    .location {
+      font-size: 13px;
+      margin: 12px 0;
+      padding: 10px;
+      background: #e7f3ff;
+      border-radius: 6px;
+      border-left: 3px solid #0066cc;
+      color: #0066cc;
+      word-break: break-word;
+    }
+
+    .actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .action-btn {
+      flex: 1;
+      min-width: 80px;
+      padding: 8px 12px;
+      font-size: 12px;
+      border: 1px solid #ddd;
+      background: white;
+    }
+
+    .action-btn:hover {
+      background: #f8f9fa;
+    }
+
+    .empty {
+      background: white;
+      color: #666;
+      text-align: center;
+      padding: 60px 20px;
+      border-radius: 12px;
+      font-size: 16px;
+    }
+
+    .pagination {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .pagination button {
+      padding: 8px 12px;
+      font-size: 13px;
+      min-width: 40px;
+    }
+
+    .pagination .active {
+      background: #667eea;
+      color: white;
+    }
+
+    .pagination .disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .page-info {
+      font-size: 13px;
+      color: #666;
+      margin: 0 12px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+      font-size: 16px;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      border: 3px solid #f0f0f0;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>📊 Problem Reports Dashboard</h1>
+      <p>Monitor and manage citizen reports in real-time</p>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-panel">
+      <div class="filters-title">🔍 Search & Filters</div>
+      
+      <div class="filters-row">
+        <div class="filter-group" style="flex: 2;">
+          <label>Search Reports</label>
+          <input 
+            type="text" 
+            id="searchInput" 
+            placeholder="Search by title or description..."
+            onchange="loadReports()"
+            onkeyup="if(event.key==='Enter') loadReports()"
+          />
+        </div>
+
+        <div class="filter-group">
+          <label>Status</label>
+          <select id="statusFilter" onchange="loadReports()">
+            <option value="">All Statuses</option>
+            <option value="submitted">Submitted</option>
+            <option value="in_review">In Review</option>
+            <option value="resolved">Resolved</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Category</label>
+          <select id="categoryFilter" onchange="loadReports()">
+            <option value="">All Categories</option>
+            <option value="road">Road Issues</option>
+            <option value="garbage">Garbage</option>
+            <option value="water">Water</option>
+            <option value="electricity">Electricity</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Priority</label>
+          <select id="priorityFilter" onchange="loadReports()">
+            <option value="">All Priorities</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+
+        <div class="filter-group buttons">
+          <button class="btn-primary" onclick="loadReports()">🔄 Apply Filters</button>
+          <button class="btn-secondary" onclick="clearFilters()">✕ Clear</button>
+        </div>
+      </div>
+
+      <!-- Stats Section -->
+      <div class="stats" id="stats" style="margin-top: 20px;"></div>
+    </div>
+
+    <!-- Reports Grid -->
+    <div id="reports" class="grid"></div>
+
+    <!-- Pagination -->
+    <div class="pagination" id="pagination"></div>
+  </div>
+
+  <script>
+    let currentPage = 1;
+    const pageSize = 12;
+
+    async function loadReports(page = 1) {
+      currentPage = page;
+      const container = document.getElementById('reports');
+      container.innerHTML = '<div class="loading"><span class="spinner"></span>Loading reports...</div>';
+
+      try {
+        // Build query parameters
+        const params = new URLSearchParams();
+        params.append('page', page);
+        params.append('limit', pageSize);
+
+        const search = document.getElementById('searchInput')?.value;
+        if (search) params.append('search', search);
+
+        const status = document.getElementById('statusFilter')?.value;
+        if (status) params.append('status', status);
+
+        const category = document.getElementById('categoryFilter')?.value;
+        if (category) params.append('category', category);
+
+        const priority = document.getElementById('priorityFilter')?.value;
+        if (priority) params.append('priority', priority);
+
+        const res = await fetch(`/api/reports?${params}`);
+        const data = await res.json();
+
+        if (!data.reports || data.reports.length === 0) {
+          container.innerHTML = '<div class="empty">📭 No reports found. Adjust your filters and try again.</div>';
+          document.getElementById('pagination').innerHTML = '';
+          updateStats(0, 0);
+          return;
+        }
+
+        container.innerHTML = data.reports.map(report => {
+          const statusClass = `status-${report.status || 'submitted'}`;
+          const createdAt = new Date(report.createdAt).toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+
+          const imageHtml = report.imageUrl
+            ? `<img src="${report.imageUrl}" class="preview" alt="Problem image" onclick="window.open(this.src)" />`
+            : '';
+
+          const audioHtml = report.audioUrl
+            ? `<audio controls class="audio">
+                 <source src="${report.audioUrl}" />
+                 Your browser does not support the audio element.
+               </audio>`
+            : '';
+
+          const locationHtml = report.location?.coordinates?.length === 2
+            ? `<div class="location">
+                 📍 <strong>Lat:</strong> ${report.location.coordinates[1].toFixed(6)}<br/>
+                 📍 <strong>Lng:</strong> ${report.location.coordinates[0].toFixed(6)}
+               </div>`
+            : `<div class="location">📍 Location not shared</div>`;
+
+          return `
+            <div class="card">
+              <div class="card-title">${escapeHtml(report.title)}</div>
+              <div class="card-meta">
+                <span>🕒 ${createdAt}</span>
+                <span>📌 ${report.category || 'other'}</span>
+              </div>
+              
+              <div class="status-badge ${statusClass}">${(report.status || 'submitted').replace('_', ' ')}</div>
+
+              <div class="card-content">
+                <div class="card-field">
+                  <span class="card-field-label">Category:</span>
+                  <span class="card-field-value">${report.category || 'Other'}</span>
+                </div>
+                <div class="card-field">
+                  <span class="card-field-label">Priority:</span>
+                  <span class="card-field-value">${report.priority || 'Medium'}</span>
+                </div>
+              </div>
+
+              <div class="card-description">${escapeHtml(report.description)}</div>
+
+              ${imageHtml}
+              ${audioHtml}
+              ${locationHtml}
+
+              <div class="actions">
+                <button class="action-btn btn-secondary" onclick="updateStatus('${report._id}', 'submitted')">📥 Submitted</button>
+                <button class="action-btn btn-secondary" onclick="updateStatus('${report._id}', 'in_review')">👀 In Review</button>
+                <button class="action-btn btn-secondary" onclick="updateStatus('${report._id}', 'resolved')">✅ Resolved</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // Update pagination
+        const { page: currentPageNum, pages: totalPages, total } = data.pagination;
+        updatePagination(currentPageNum, totalPages);
+        updateStats(total, data.reports.length);
+
+      } catch (error) {
+        console.error(error);
+        container.innerHTML = '<div class="empty">❌ Failed to load reports. Please try again.</div>';
+      }
+    }
+
+    function updatePagination(currentPage, totalPages) {
+      const paginationDiv = document.getElementById('pagination');
+      
+      if (totalPages <= 1) {
+        paginationDiv.innerHTML = '';
+        return;
+      }
+
+      let html = '';
+
+      // Previous button
+      if (currentPage > 1) {
+        html += `<button class="btn-secondary" onclick="loadReports(${currentPage - 1})">← Previous</button>`;
+      } else {
+        html += `<button class="btn-secondary disabled">← Previous</button>`;
+      }
+
+      // Page info
+      html += `<span class="page-info">Page <strong>${currentPage}</strong> of <strong>${totalPages}</strong></span>`;
+
+      // Next button
+      if (currentPage < totalPages) {
+        html += `<button class="btn-secondary" onclick="loadReports(${currentPage + 1})">Next →</button>`;
+      } else {
+        html += `<button class="btn-secondary disabled">Next →</button>`;
+      }
+
+      paginationDiv.innerHTML = html;
+    }
+
+    function updateStats(total, displayed) {
+      const statsDiv = document.getElementById('stats');
+      
+      statsDiv.innerHTML = `
+        <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+          <div class="stat-number">${total}</div>
+          <div class="stat-label">Total Reports</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+          <div class="stat-number">${displayed}</div>
+          <div class="stat-label">On This Page</div>
+        </div>
+      `;
+    }
+
+    async function updateStatus(id, status) {
+      try {
+        const res = await fetch(`/api/reports/${id}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          alert('❌ ' + (data.message || 'Failed to update status'));
+          return;
+        }
+
+        alert('✅ Status updated successfully');
+        loadReports(currentPage);
+      } catch (error) {
+        console.error('Error updating status:', error);
+        alert('❌ Failed to update status');
+      }
+    }
+
+    function clearFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('statusFilter').value = '';
+      document.getElementById('categoryFilter').value = '';
+      document.getElementById('priorityFilter').value = '';
+      loadReports(1);
+    }
+
+    function escapeHtml(text) {
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      };
+      return text.replace(/[&<>"']/g, m => map[m]);
+    }
+
+    // Load reports on page load
+    loadReports();
+  </script>
+</body>
+</html>
